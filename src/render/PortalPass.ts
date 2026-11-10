@@ -73,7 +73,7 @@ export class PortalPass {
 
       renderer.setRenderTarget(portal.target);
       renderer.autoClear = true;
-      renderer.setClearColor(0x0b0c10, 1);
+      renderer.setClearColor(0x14121c, 1);
       renderer.clear();
       renderer.render(scene, this.portalCamera);
 
@@ -83,7 +83,7 @@ export class PortalPass {
 
     renderer.setRenderTarget(prevTarget);
     renderer.autoClear = prevAutoClear;
-    renderer.setClearColor(0x0b0c10, 1);
+    renderer.setClearColor(0x14121c, 1);
   }
 
   dispose(): void {
@@ -191,7 +191,7 @@ export function makePortalQuad(
   normal: Vec3,
 ): THREE.Mesh {
   const geo = new THREE.PlaneGeometry(width, height);
-  const mat = new THREE.MeshBasicMaterial({ color: 0x0b0c10 });
+  const mat = new THREE.MeshBasicMaterial({ color: 0x14121c });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.position.set(center.x, center.y, center.z);
 

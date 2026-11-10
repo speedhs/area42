@@ -428,10 +428,10 @@ function longHallDef(): CellDef {
         const ctx = canvas.getContext("2d")!;
         ctx.fillStyle = "#06140c";
         ctx.fillRect(0, 0, 512, 384);
-        ctx.strokeStyle = "#3dff9a";
+        ctx.strokeStyle = "#7a9cff";
         ctx.lineWidth = 4;
         ctx.strokeRect(12, 12, 488, 360);
-        ctx.fillStyle = "#3dff9a";
+        ctx.fillStyle = "#7a9cff";
         ctx.font = "bold 36px monospace";
         ctx.textAlign = "center";
         ctx.fillText("ECHO // FOYER", 256, 170);

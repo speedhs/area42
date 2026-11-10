@@ -1,4 +1,7 @@
 import * as THREE from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { MachineAudio, type WingBed } from "../audio/MachineAudio";
 import { FirstPerson } from "../player/FirstPerson";
 import { makePortalQuad, PortalPass } from "../render/PortalPass";
@@ -33,6 +36,8 @@ export class Game {
   private scene: THREE.Scene;
   private player: FirstPerson;
   private portalPass = new PortalPass();
+  private composer!: EffectComposer;
+  private bloom!: UnrealBloomPass;
   private audio = new MachineAudio();
   private cells = new Map<string, CellRuntime>();
   private currentCellId = "foyer";
@@ -74,14 +79,24 @@ export class Game {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.setClearColor(Theme.bg);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.12;
+    this.renderer.toneMappingExposure = 1.05;
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(Theme.bg);
-    this.scene.fog = new THREE.FogExp2(Theme.fog, 0.018);
+    this.scene.fog = new THREE.Fog(Theme.fog, 14, 48);
 
     this.player = new FirstPerson(canvas);
     this.player.setFov(BASE_FOV);
+
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(this.scene, this.player.camera));
+    this.bloom = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.45,
+      0.55,
+      0.82,
+    );
+    this.composer.addPass(this.bloom);
 
     this.buildWorld();
     this.enterCell("foyer", true);
@@ -154,6 +169,7 @@ export class Game {
     document.removeEventListener("pointerlockchange", this.onPointerLockChange);
     this.player.dispose();
     this.portalPass.dispose();
+    this.composer.dispose();
     this.audio.dispose();
     this.renderer.dispose();
   }
@@ -624,7 +640,7 @@ export class Game {
     }
 
     this.renderer.setRenderTarget(null);
-    this.renderer.render(this.scene, this.player.camera);
+    this.composer.render();
   };
 
   private onResize = (): void => {
@@ -633,6 +649,8 @@ export class Game {
     this.player.camera.aspect = w / h;
     this.player.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
+    this.composer.setSize(w, h);
+    this.bloom.setSize(w, h);
     this.portalPass.setSize(w, h);
   };
 

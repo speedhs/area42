@@ -2,6 +2,8 @@
 
 A first-person browser prototype: a scientist trapped inside his own spatial instrument.
 
+**Look:** cel megastructure (flat violet panels, pale sun fog, ink edges) — story and axioms unchanged.
+
 ## Run
 
 ```bash
