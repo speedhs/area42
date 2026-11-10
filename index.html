@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Area 42</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0b0c10;
+        font-family: "Share Tech Mono", "IBM Plex Mono", Consolas, monospace;
+        color: #d8dde4;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .panel {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(18, 12, 8, 0.78) 0%,
+          rgba(6, 7, 10, 0.94) 70%
+        );
+        z-index: 5;
+      }
+      .panel.show {
+        display: flex;
+      }
+
+      .card {
+        max-width: 40rem;
+        width: 100%;
+        padding: 1.75rem 2rem;
+        border: 1px solid rgba(224, 112, 32, 0.55);
+        background: rgba(10, 12, 16, 0.94);
+        box-shadow: 0 0 48px rgba(224, 112, 32, 0.14);
+        letter-spacing: 0.05em;
+      }
+      .card h1 {
+        font-size: 1.4rem;
+        font-weight: 400;
+        color: #e07020;
+        margin-bottom: 0.75rem;
+        text-shadow: 0 0 14px rgba(224, 112, 32, 0.45);
+      }
+      .card h2 {
+        font-size: 1.05rem;
+        font-weight: 400;
+        color: #e07020;
+        margin-bottom: 0.75rem;
+      }
+      .card p {
+        font-size: 0.85rem;
+        line-height: 1.65;
+        color: #9aa3ad;
+        margin-bottom: 0.5rem;
+      }
+      .card .axioms {
+        margin: 1rem 0 1.25rem;
+        font-size: 0.75rem;
+        color: #6a7380;
+        line-height: 1.7;
+      }
+      .card .axioms .lit {
+        color: #3dff9a;
+        text-shadow: 0 0 8px rgba(61, 255, 154, 0.3);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-top: 1.25rem;
+      }
+      button.menu-btn {
+        font-family: inherit;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        padding: 0.65rem 1.1rem;
+        border: 1px solid rgba(224, 112, 32, 0.65);
+        background: rgba(224, 112, 32, 0.12);
+        color: #e07020;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+      button.menu-btn:hover,
+      button.menu-btn:focus {
+        background: rgba(224, 112, 32, 0.28);
+        color: #ffe0c0;
+        outline: none;
+      }
+      button.menu-btn.ghost {
+        border-color: rgba(154, 163, 173, 0.35);
+        color: #9aa3ad;
+        background: transparent;
+      }
+      button.menu-btn.ghost:hover {
+        border-color: #3dff9a;
+        color: #3dff9a;
+      }
+
+      #hud {
+        position: absolute;
+        left: 1rem;
+        bottom: 1rem;
+        z-index: 3;
+        font-size: 0.7rem;
+        color: rgba(154, 163, 173, 0.55);
+        letter-spacing: 0.06em;
+        pointer-events: none;
+        display: none;
+      }
+      #hud.show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="boot" class="panel show">
+        <div class="card">
+          <h1>AREA 42 // MACHINE CORE</h1>
+          <p>You built the instrument. Now you are a reading inside it.</p>
+          <p>WASD move · mouse look · Esc pause</p>
+          <div class="actions">
+            <button type="button" class="menu-btn" id="btn-enter">ENTER HULL</button>
+            <button type="button" class="menu-btn ghost" id="btn-boot-mute">
+              AUDIO ON
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="pause" class="panel">
+        <div class="card">
+          <h2>SYSTEM PAUSED</h2>
+          <p>The machine holds its breath.</p>
+          <div class="axioms" id="axiom-log">
+            Direction · Attention · Containment · Identity · Scale
+          </div>
+          <div class="actions">
+            <button type="button" class="menu-btn" id="btn-resume">RESUME</button>
+            <button type="button" class="menu-btn ghost" id="btn-restart">
+              RESTART WING A
+            </button>
+            <button type="button" class="menu-btn ghost" id="btn-pause-mute">
+              AUDIO ON
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="ending" class="panel">
+        <div class="card">
+          <h2>ESCAPE VECTOR LOCKED</h2>
+          <p id="ending-text"></p>
+          <div class="actions">
+            <button type="button" class="menu-btn" id="btn-reboot">REBOOT</button>
+            <button type="button" class="menu-btn ghost" id="btn-to-boot">
+              RETURN TO BOOT
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="hud">ESC pause</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
